@@ -1,15 +1,43 @@
-// Handling asynchronus data in Nodejs
+// Creating html pages
+const express = require('express');
+const path = require('path');
 
-let a = 20;
-let b = 0;
+const app = express();
+const publicPath = path.join(__dirname, 'public');
 
-let waitingData = new Promise((resolve, reject) => {
-    setTimeout(() => {
-        resolve(30);
-    }, 2000)
+// app.use(express.static(publicPath));
+
+app.get('', (_, res) => {
+    res.sendFile(`${publicPath}/index.html`);
 })
 
-waitingData.then((data) => {
-    b=data;
-    console.log(a+b);
+app.get('/about', (_, res) => {
+    res.sendFile(`${publicPath}/about.html`);
 })
+
+// Template engine
+app.set('view engine', 'ejs'); // this tells node js that we are using EJS
+                            // first param will always be 'view engine'
+                            // second param show which package
+// Folder name will always be 'views'
+// extension file will always be .ejs
+
+app.get('/profile', (_, res) => {
+    const user = {
+        name: 'Ashok',
+        email: 'ashok@test.com',
+        city: 'jabalpur',
+        skills: ['angular', 'html', 'javascript']
+    }
+    res.render('profile', {user});
+})
+
+app.get('/login', (_, res) => {
+    res.render('login');
+})
+
+app.get('*', (_, res) => {
+    res.sendFile(`${publicPath}/notfound.html`);
+})
+
+app.listen(5000);

@@ -1,43 +1,101 @@
-// Creating html pages
+// Middleware in express Js(Application level)
+
+// const express = require('express');
+// const app = express();
+
+// const reqFilter = (req, res, next) => {
+//     if(!req.query.age){
+//         res.send('Please provide age');
+//     } else if(req.query.age < 18) {
+//         res.send('You cannot access this page');
+//     } else {
+//         next();
+//     }
+// }
+
+// app.use(reqFilter); // Used for application level middleware
+
+// app.get('', (req, res) => {
+//     res.send('Welcome to home page');
+// })
+
+// app.get('/users', (req, res) => {
+//     res.send('Welcome to Users page');
+// })
+
+
+
+
+// // Route level middleware(placing middleware code in same file)
+// const express = require('express');
+// const app = express();
+
+// const reqFilter = (req, res, next) => {
+//     if(!req.query.age){
+//         res.send('Please provide age');
+//     } else if(req.query.age < 18) {
+//         res.send('You cannot access this page');
+//     } else {
+//         next();
+//     }
+// }
+
+// app.get('', (req, res) => {
+//     res.send('Welcome to home page');
+// })
+
+// app.get('/users',reqFilter,  (req, res) => {
+//     res.send('Welcome to Users page');
+// })
+
+// app.get('/contact',reqFilter,  (req, res) => {
+//     res.send('Welcome to Contact page');
+// })
+
+
+
+
+// // Route level middleware(placing middleware code in seperate file)
+// const express = require('express');
+// const reqFilter = require('./middleware');
+// const app = express();
+
+// app.get('', (req, res) => {
+//     res.send('Welcome to home page');
+// })
+
+// app.get('/users',reqFilter,  (req, res) => {
+//     res.send('Welcome to Users page');
+// })
+
+// app.get('/contact',reqFilter,  (req, res) => {
+//     res.send('Welcome to Contact page');
+// })
+
+
+
+
+// Route level middleware(placing middlewareon group of routes maybe 25 out of 200 routes)
 const express = require('express');
-const path = require('path');
-
+const reqFilter = require('./middleware');
 const app = express();
-const publicPath = path.join(__dirname, 'public');
+const route = express.Router();
 
-// app.use(express.static(publicPath));
+route.use(reqFilter);
 
-app.get('', (_, res) => {
-    res.sendFile(`${publicPath}/index.html`);
+app.get('', (req, res) => {
+    res.send('Welcome to home page');
 })
 
-app.get('/about', (_, res) => {
-    res.sendFile(`${publicPath}/about.html`);
+route.get('/users', (req, res) => {
+    res.send('Welcome to Users page');
 })
 
-// Template engine
-app.set('view engine', 'ejs'); // this tells node js that we are using EJS
-                            // first param will always be 'view engine'
-                            // second param show which package
-// Folder name will always be 'views'
-// extension file will always be .ejs
-
-app.get('/profile', (_, res) => {
-    const user = {
-        name: 'Ashok',
-        email: 'ashok@test.com',
-        city: 'jabalpur',
-        skills: ['angular', 'html', 'javascript']
-    }
-    res.render('profile', {user});
+app.get('/contact', (req, res) => {
+    res.send('Welcome to Contact page');
 })
 
-app.get('/login', (_, res) => {
-    res.render('login');
-})
+app.use('/', route);
 
-app.get('*', (_, res) => {
-    res.sendFile(`${publicPath}/notfound.html`);
-})
 
 app.listen(5000);
